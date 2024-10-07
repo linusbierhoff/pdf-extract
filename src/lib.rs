@@ -3,7 +3,7 @@ extern crate lopdf;
 use adobe_cmap_parser::{ByteMapping, CodeRange, CIDRange};
 use encoding_rs::UTF_16BE;
 use lopdf::content::Content;
-use lopdf::*;
+pub use lopdf::*;
 use euclid::*;
 use lopdf::encryption::DecryptionError;
 use std::fmt::{Debug, Formatter};
@@ -494,7 +494,8 @@ impl<'a> PdfSimpleFont<'a> {
                         }
                     }
                 }
-                let name = pdf_to_utf8(encoding.get(b"Type").unwrap().as_name().unwrap());
+                // "Type" is optional
+                let name = encoding.get(b"Type").and_then(|x| x.as_name()).and_then(|x| Ok(pdf_to_utf8(x)));
                 dlog!("name: {}", name);
 
                 encoding_table = Some(table);
